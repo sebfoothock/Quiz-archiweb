@@ -20,9 +20,9 @@
                         {{ questions[questionActuel]['question']}}
                     </p>
                     <label v-bind:for="key" class="block mt-4 border border-gray-300 rounded-lg py-2 px-6 text-lg"
-                        v-for="reponse,key in questions[0] ['reponses']" v-bind:class="{'hover:bg-gray-100 cursor-pointer' : questionSelectionne == ''},
+                        v-for="reponse,key in questions[questionActuel] ['reponses']" v-bind:class="{'hover:bg-gray-100 cursor-pointer' : questionSelectionne == ''},
                     {'bg-red-200' : questionSelectionne == key},
-                    {'bg-green-200' : key == questions[0]['reponseCorrecte'] && questionSelectionne != ''}">
+                    {'bg-green-200' : key == questions[questionActuel]['reponseCorrecte'] && questionSelectionne != ''}">
                         <!-- v-for=pour parcourir les questions, mettre le rouge avant pour que le vert aille dessus -->
                         <input type="radio" v-bind:id="key" class="hidden" v-bind:value="key"
                             v-on:change="repondu($event)" v-bind:disabled="questionSelectionne != ''">
