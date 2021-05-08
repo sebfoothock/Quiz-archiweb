@@ -17,6 +17,7 @@ router.post('/quiz/update', quizController.quizShowUpdate);
 /****** API ******/
 
 router.get('/api/questions',quizControllerApi.questionsList);
+router.get('/api/answers/:idQuiz',quizControllerApi.answersList);
 router.get('/api/quiz',quizControllerApi.quizList);
 router.post('/api/newquiz', quizControllerApi.newQuiz);
 router.post('/api/newquestion', quizControllerApi.newQuestion);

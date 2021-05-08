@@ -1,48 +1,38 @@
 const app = Vue.createApp({
+    mounted() {
+        axios
+        .get("http://localhost:4000/api/getquestions/1")
+        .then((response) => {
+            this.questions = response.data;
+            console.log(this.questions);
+        })
+        .catch((error) =>{
+            console.log(error);
+        }),
+        axios
+        .get("http://localhost:4000/api/answers/1")
+        .then((response) => {
+            this.reponses = response.data;
+            console.log(this.reponses);
+        })
+        .catch((error) =>{
+            console.log(error);
+        })
+    },
     data() {
         return {
+            questions : [],
+            reponses: [],
             questionActuel: 0,
             questionSelectionne: '',
-            nbQuestions: 3,
-            score: 0,
-            questions: [{
-                    question: "Rolex",
-                    reponses: {
-                        a: "dsqd",
-                        b: "dsqd",
-                        c: "dsqd",
-                        d: "dsqd"
-                    },
-                    reponseCorrecte: 'b'
-                },
-                {
-                    question: "Rolex2",
-                    reponses: {
-                        a: "dsqd",
-                        b: "dsqd",
-                        c: "dsqd",
-                        d: "dsqd"
-                    },
-                    reponseCorrecte: 'b'
-                },
-                {
-                    question: "Rolex3",
-                    reponses: {
-                        a: "dsqd",
-                        b: "dsqd",
-                        c: "dsqd",
-                        d: "dsqd"
-                    },
-                    reponseCorrecte: 'b'
-                }
-            ]
+            score: 0
         }
     },
     methods: {
         repondu(e) {
-            this.questionSelectionne = e.target.value
-            if(this.questionSelectionne == this.questions[this.questionActuel] ['reponseCorrecte'])
-                this.score =+ 10
+            this.questionSelectionne = e
+            if(this.questionSelectionne === 'reponse1')
+                this.score = this.score + 10
             console.log(this.score)
         },
         questionSuivante() {
@@ -57,7 +47,12 @@ const app = Vue.createApp({
             this.questionSelectionne = ''
             this.score = 0
         }
-    }
+    },
+    computed: {
+        nbQuestions: function () {
+            return this.questions.length;
+        }
+    },
 })
 
 

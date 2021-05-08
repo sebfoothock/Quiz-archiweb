@@ -13,6 +13,18 @@ exports.questionsList = function (req,res){
     });
 }
 
+exports.answersList = function (req,res){
+    let idQuiz = req.params.idQuiz;
+    connection.query("select reponse1,reponse2,reponse3,reponse4 from quiz.questions Where idQuiz = ?;", idQuiz, function(error, result){
+        if(error){
+            res.status(400).json({'error': error});
+        }
+        else{
+            res.status(200).json(result);
+        }
+    });
+}
+
 exports.quizList = function (req,res){
     connection.query("select * from quiz.quiz;", function(error, result){
         if(error){
