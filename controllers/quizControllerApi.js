@@ -73,9 +73,32 @@ exports.getQuiz = function(req, res){
     });
 }
 
-exports.getQuestions = function(req, res){
+exports.questionsQuiz = function(req, res){
     let idQuiz = req.params.idQuiz;
     connection.query("select * from quiz.questions Where idQuiz = ?;", idQuiz, function(error, result){//le ? est remplacé par quiz
+        if(error){
+            res.status(400).json({'message': error});
+        }
+        else{
+            res.status(200).json(result);
+        }
+    });
+}
+
+exports.categorieList = function(req, res){
+    connection.query("select distinct categorie from quiz.quiz;", function(error, result){
+        if(error){
+            res.status(400).json({'error': error});
+        }
+        else{
+            res.status(200).json(result);
+        }
+    });
+}
+
+exports.quizCategorie = function(req, res){
+    let categ = req.params.categ;
+    connection.query("select * from quiz.quiz Where categorie = ?;", categ, function(error, result){//le ? est remplacé par quiz
         if(error){
             res.status(400).json({'message': error});
         }
@@ -100,7 +123,7 @@ exports.updateQuestion = function(req, res){
 
 exports.updateQuiz = function(req, res){
     let idQuiz = req.body.idQuiz;
-    let quiz = {"idQuiz": req.body.idQuiz, "nomQuiz":req.body.nomQuiz, "categorie": req.body.categorie, "meilleurScore": req.body.meilleurScore, "meilleurJoueur": req.body.meilleurJoueur};
+    let quiz = {"idQuiz": req.body.idQuiz, "nomQuiz":req.body.nomQuiz, "categorie": req.body.categorie};
     connection.query("update quiz.quiz set ? where idQuiz = ?;", [quiz,idQuiz] , function(error, resultSQL){//le ? est remplacé par quiz
         if(error){
             res.status(400).json({'message': error});
