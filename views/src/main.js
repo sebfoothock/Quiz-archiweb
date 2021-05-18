@@ -4,15 +4,16 @@ import router from './router'
 import axios from 'axios'
 import VueSimpleAlert from "vue-simple-alert"
 
+//utilisation de simpleAlert pour afficher les alertes
 Vue.use(VueSimpleAlert);
 
+//utilisation d'Axios pour faire des requêtes vers l'API
 Vue.prototype.$axios = axios
 
 new Vue({
     router,
-    el: '#app',
-    render: h => h(App)
-})
+    render: h => h(App),
+}).$mount('#app')
 
 
 

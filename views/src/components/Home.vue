@@ -1,20 +1,18 @@
+<!--
+Le composant Home permet de sélectionner un quiz à faire ou à modifier et d'ajouter un quiz
+-->
+
 <template>
   <div id="container">
     <h1 class="titreQuiz font-bold text-5xl text-center text-blue-700">Jouez et créez votre propre quiz</h1>
     <br>
-    <label class="text-gray-700 text-2xl font-bold">Filtre : </label>
-    <select name="categorie" id="cars">
-      <option value="volvo">générale</option>
-      <option value="saab">sport</option>
-      <option value="opel">histoire</option>
-      <option value="audi">géographie</option>
-  </select>
-  <br>
-        <br>
-        <label class="bg-green-300 p-3 m-5 rounded-lg hover:bg-green-500">
-                <a @click="goAjouterQuiz()">Ajoutez un quiz</a>
-        </label>
-    <div v-bind:key="key" v-for="quiz,key in quizs">
+    <input type="text" v-model="categorie" placeholder="chercher une catégorie">
+    <br>
+    <br>
+    <label class="bg-green-300 p-3 m-5 rounded-lg hover:bg-green-500">
+      <a @click="goAjouterQuiz()">Ajoutez un quiz</a>
+    </label>
+    <div v-bind:key="key" v-for="quiz,key in filtreCategorie">
       <div class="boxQuiz bg-blue-200 p-12 rounded-lg shadow-lg mt-4 hover:bg-blue-300 cursor-pointer"
         @click="goQuiz(quiz.idQuiz)">
         <h2 class="font-bold text-xl text-center text-blue-700">{{quiz.nomQuiz}}</h2>
@@ -31,21 +29,22 @@
 
 <script>
   export default {
+    
     mounted() {
+      //Permet d'accéder aux informations des quiz
       this.$axios
         .get("http://localhost:4000/api/quiz")
         .then((response) => {
           this.quizs = response.data;
-          /*  console.log(this.quizs); */
         })
         .catch((error) => {
           console.log(error);
         }),
-        this.$axios
-        .get("http://localhost:4000/api/answers/1")
+      //Permet d'accéder à la liste des catégories
+      this.$axios
+        .get("http://localhost:4000/api/categories")
         .then((response) => {
-          this.reponses = response.data;
-          /* console.log(this.reponses); */
+          this.categories = response.data;
         })
         .catch((error) => {
           console.log(error);
@@ -53,19 +52,35 @@
     },
     data() {
       return {
+        //Ce sont les informations des quiz
         quizs: [],
+        //Ce sont la liste des catégories
+        categories: [],
+        //Recupère ce que l'utilisateur a tapé dans la barre de recherche des catégories
+        categorie: ""
       }
     },
     methods: {
+      //Permet d'aller au composant Quiz en fonction de l'identifiant du quiz
       goQuiz(quiz) {
         this.$router.push('/Quiz/' + quiz)
       },
+      //Permet d'aller au composant Modifier en fonction de l'identifiant du quiz
       modifierQuiz(quiz) {
         this.$router.push('/Modifier/' + quiz)
       },
-      goAjouterQuiz(){
-       this.$router.push('/AjouterQuiz/')
-      },
+      //Permet d'aller au composant AjouterQuiz
+      goAjouterQuiz() {
+        this.$router.push('/AjouterQuiz/')
+      }
+    },
+    computed: {
+      //Permet de filtrer les quiz à afficher et prend en paramètre les informations du quiz
+      filtreCategorie: function(){
+        return this.quizs.filter((quiz) => {
+          return quiz.categorie.toLowerCase().match(this.categorie.toLowerCase())
+        });
+      }
     }
   }
 </script>

@@ -1,3 +1,7 @@
+<!--
+Le composant APP permet d'afficher la barre de navigation ainsi que les autres composants de l'application
+-->
+
 <template>
   <div id="app">
     <nav>
@@ -5,12 +9,6 @@
         <li class=" text-blue-400 hover:bg-blue-100">
           <router-link  to="/Home">Accueil</router-link>
         </li>
-        <!-- <li>
-          <router-link to="/Quiz">Quiz</router-link>
-        </li>
-        <li>
-          <router-link to="/Modifier">Modifier</router-link>
-        </li> -->
       </ul>
     </nav>
     <div id="body">
@@ -20,12 +18,9 @@
 </template>
 
 <script>
-  export default {
-  }
 </script>
 
 <style>
-
   @import "./assets/styles.css";
   #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -34,7 +29,7 @@
   #body{
     text-align: center;
     padding: 0;
-    margin: 80px 0;
+    margin: 50px 0;
     width: 100vw;
     display: inline-flex;
     justify-content: center;

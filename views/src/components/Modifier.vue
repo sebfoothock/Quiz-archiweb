@@ -1,30 +1,31 @@
+<!--
+Le composant Modifier permet de modifier un quiz  et ses questions
+-->
+
 <template>
     <div id="container">
-        <h1 class="font-bold text-5xl text-center text-blue-700">Modification : Quiz culture générale</h1>
+        <h1 class="font-bold text-5xl text-center text-blue-700">Modification : {{quiz[0].nomQuiz}}</h1>
         <br>
         <br>
-        <label class="bg-green-300 p-3 m-5 rounded-lg hover:bg-green-500">
-                <a @click="goAjouterQuestion(quiz.idQuiz)">Ajoutez une question</a>
-        </label>
-        <label name="supprimer" class="bg-red-400 p-3 m-2 rounded-lg hover:bg-red-600"><a
-            @click="supprimerQuiz(quiz.idQuiz)">Supprimez ce quiz</a>
-        </label>
-        <div class="boxQuiz bg-blue-200 p-12 rounded-lg shadow-lg mt-4">
-            <div class="m-3" 
-            v-bind:key="key"
-            v-for="quizInfo,key in quiz">
+        <div class="boxQuiz bg-blue-200 p-12 rounded-lg shadow-lg mt-4" v-bind:key="key" v-for="quizInfo,key in quiz">
+            <div class="m-3" >
                 <label class="text-blue-800">nom du Quiz</label>
                 <input class="border-red-300" type="text" name="nom quiz" v-model="quizInfo.nomQuiz">
                 <label class="text-blue-800">catégorie du Quiz</label>
                 <input class="border-red-300" type="text" name="categorie" v-model="quizInfo.categorie">
             </div>
             <label class="bg-indigo-400 p-3 m-8 rounded-lg hover:bg-indigo-500">
-                <a @click="modifierQuiz(quizInfo.nomQuiz, quizInfo.categorie)">Modifiez</a>
+                <a @click="modifierQuiz(quizInfo.nomQuiz, quizInfo.categorie, quizInfo.idQuiz)">Modifiez</a>
+            </label>
+            <label class="bg-green-300 p-3 m-5 rounded-lg hover:bg-green-500 btnQuiz">
+                <a @click="goAjouterQuestion(quizInfo.idQuiz)">Ajoutez une question</a>
+            </label>
+            <label name="supprimer" class="bg-red-400 p-3 m-2 rounded-lg hover:bg-red-600 btnQuiz"><a
+                    @click="supprimerQuiz(quizInfo.idQuiz)">Supprimez ce quiz</a>
             </label>
         </div>
-
-        <div class="boxQuiz bg-blue-200 p-12 rounded-lg shadow-lg mt-4" v-bind:key="key"
-            v-for="element,key in questions">
+        <div class="boxQuiz bg-blue-200 p-12 rounded-lg shadow-lg mt-4" v-bind:key="index"
+            v-for="element,index in questions">
             <div class="m-3">
                 <label class="text-blue-800">Question</label>
                 <input class="border-red-300" type="text" name="question" v-model="element.question">
@@ -37,11 +38,11 @@
                 <label class="text-blue-800">une réponse</label>
                 <input class="border-red-300" type="text" name="reponse4" v-model="element.reponse4">
             </div>
-            <label class="bg-indigo-400 p-3 m-8 rounded-lg hover:bg-indigo-500">
-                <a @click="modifierQuestion(element.idQquestion, element.question, element.reponse1, element.reponse2, element.reponse3, element.reponse4)">Modifiez</a>
+            <label class="bg-indigo-400 p-3 m-8 rounded-lg hover:bg-indigo-500 btnQuestion">
+                <a @click="modifierQuestion(element.idQuestion, element.question, element.reponse1, element.reponse2, element.reponse3, element.reponse4, element.idQuiz)">Modifiez</a>
             </label>
-            <label class="bg-red-400 p-3 m-5 rounded-lg hover:bg-red-600">
-                <a @click="supprimerQuestion(element.idQquestion)">Supprimez</a>
+            <label class="bg-red-400 p-3 m-5 rounded-lg hover:bg-red-600 btnQuestion">
+                <a @click="supprimerQuestion(element.idQuestion)">Supprimez</a>
             </label>
         </div>
     </div>
@@ -50,20 +51,20 @@
 <script>
     export default {
         mounted() {
+            //Permet d'accéder à toutes les informations des questions d'un quiz
             this.$axios
                 .get("http://localhost:4000/api/questionsQuiz/" + this.$route.params.idQuiz)
                 .then((response) => {
-                    this.quizInfo = response.data;
-                    /* console.log(this.questions); */
+                    this.questions = response.data;
                 })
                 .catch((error) => {
                     console.log(error);
                 }),
-                this.$axios
+            //Permet d'accéder à toutes les informations d'un quiz
+            this.$axios
                 .get("http://localhost:4000/api/getquiz/" + this.$route.params.idQuiz)
                 .then((response) => {
                     this.quiz = response.data;
-                     /* console.log(this.quiz);  */
                 })
                 .catch((error) => {
                     console.log(error);
@@ -71,29 +72,33 @@
         },
         data() {
             return {
+                //Ce sont toutes les informations des questions d'un quiz
                 questions: [],
-                myQuestion: {},
-                quiz: [],
-                quizInfo: []
+                //Ce sont les informations d'un quiz
+                quiz: []
             }
         },
         methods: {
-            modifierQuestion(idQ, q, r1, r2, r3, r4) {
+            //Permet de mofidier une question selon les modifications de l'utilisateur
+            modifierQuestion(idQuest, q, r1, r2, r3, r4, idQ) {
                 this.$axios
-                    .put("http://localhost:4000/api/question", JSON.stringify({
-                        idQuestion: idQ,
+                    .put("http://localhost:4000/api/question", {
+                        idQuestion: idQuest,
                         question: q,
                         reponse1: r1,
                         reponse2: r2,
                         reponse3: r3,
                         reponse4: r4,
-                        idQuiz: "1"
-                    }), {
+                        idQuiz: idQ
+                    }, {
                         headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
+                            'Content-Type': 'application/json; charset=UTF-8'
                         }
                     }).then((response) => {
                         this.questions = response.data;
+                        setTimeout(() => {
+                            this.$router.go()
+                        }, 1000);
                         this.$alert("question modifié");
                         console.log(this.questions);
                     })
@@ -102,18 +107,22 @@
                         console.log(error);
                     });
             },
-            modifierQuiz(nom, categ) {
+            //Permet de mofidier un quiz selon les modifications de l'utilisateur
+            modifierQuiz(nom, categ, idQ) {
                 this.$axios
-                    .put("http://localhost:4000/api/quiz", JSON.stringify({
+                    .put("http://localhost:4000/api/quiz", {
                         nomQuiz: nom,
                         categorie: categ,
-                        idQuiz: "1"
-                    }), {
+                        idQuiz: idQ
+                    }, {
                         headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
+                            'Content-Type': 'application/json; charset=UTF-8'
                         }
                     }).then((response) => {
                         this.quiz = response.data;
+                        setTimeout(() => {
+                            this.$router.go()
+                        }, 1000);
                         this.$alert("quiz modifié");
                         console.log(this.quiz);
                     })
@@ -122,16 +131,16 @@
                         console.log(error);
                     });
             },
-            supprimerQuestion(idQ){
+            //Permet de supprimer une question
+            supprimerQuestion(idQ) {
                 this.$confirm("Etes-vous sûr de vouloir supprimer cette question ?").then(() => {
                     this.$axios
-                        .delete("http://localhost:4000/api/deletequestion", JSON.stringify({ idQuestion: idQ }),
-                        {
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        }).then((response) => {
+                        .delete("http://localhost:4000/api/deletequestion/" + idQ)
+                        .then((response) => {
                             this.quiz = response.data;
+                            setTimeout(() => {
+                                this.$router.go()
+                            }, 1000);
                             this.$alert("question supprimé");
                             console.log(this.quiz);
                         })
@@ -140,17 +149,14 @@
                             console.log(error);
                         });
                 });
-                
+
             },
-            supprimerQuiz(idQ){
+            //Permet de supprimer un quiz
+            supprimerQuiz(idQ) {
                 this.$confirm("Etes-vous sûr de vouloir supprimer ce quiz ?").then(() => {
                     this.$axios
-                        .delete("http://localhost:4000/api/deletequiz", JSON.stringify({ idQuiz: idQ }),
-                        {
-                            headers: {
-                                'Content-Type': 'application/x-www-form-urlencoded'
-                            }
-                        }).then((response) => {
+                        .delete("http://localhost:4000/api/deletequiz/" + idQ)
+                        .then((response) => {
                             this.quiz = response.data;
                             this.$alert("quiz supprimé");
                             console.log(this.quiz);
@@ -159,11 +165,15 @@
                             this.$alert("erreur de suppression");
                             console.log(error);
                         });
+                    setTimeout(() => {
+                        this.$router.push('/Home')
+                    }, 100);
                 });
-                
+
             },
-            goAjouterQuestion(idQ){
-                this.$router.push('/AjouterQuestion/' + idQ)
+            //Permet d'aller au composant AjouterQuestion en fonction de l'identifiant du quiz
+            goAjouterQuestion(quizId) {
+                this.$router.push('/AjouterQuestion/' + quizId)
             },
         }
     }
@@ -186,13 +196,29 @@
         min-width: 40vw;
     }
 
-    @media all and (max-width: 900px) {
+     @media all and (max-width: 1500px) {
+         .btnQuiz {
+            display: block;
+        }
+     }
+
+    @media all and (max-width: 1000px) {
         #container {
-            min-width: 90vw;
+            min-width: 80vw;
+        }
+
+        .btnQuestion{
+            margin: 15px;
         }
 
         .boxQuiz {
             padding: 3rem 1rem;
+        }
+    }
+
+    @media all and (max-width: 400px) {
+        .btnQuestion{
+            display: block;
         }
     }
 </style>
