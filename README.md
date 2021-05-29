@@ -9,7 +9,6 @@
 3. Lancer le backend : ```nodemon serve```
 
 4. Lancer le frontend : 
-- ```cd .\views\ ```
+- ```cd .\views\```
 - ```npm run serve```
-
 
